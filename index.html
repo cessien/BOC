@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="js/createjs-2013.12.12.min.js" type="text/javascript"></script>
+        <script type="text/javascript">
+            /* The Globals */
+            var stageone;
+            var circle;
+            var queue;
+            
+            function init() {
+                
+                /* Stage ONE */
+                stageone = new createjs.Stage("one");
+                
+                queue = new createjs.LoadQueue();
+                queue.addEventListener("complete", handleComplete);
+                queue.loadManifest([{id:"background",src:"svg/one/background.png"},{id:"computer1",src:"svg/one/computer1.png"},{id:"computer2",src:"svg/one/computer2.png"},{id:"window",src:"svg/one/window.png"},{id:"lightbulb",src:"svg/one/lightbulb.png"}]);
+                
+                stageone.props = {};
+                
+                circle = new createjs.Shape();
+                circle.graphics.beginFill("red").drawCircle(0, 0, 50);
+                circle.x = 100;
+                circle.y = 100;
+                stageone.addChild(circle);
+                
+                circle.addEventListener("click",changeColor);
+                
+                setInterval(function(){
+                    stageone.update();
+                }, 200);
+            }
+            
+            function handleComplete(event) {
+                //Stage background
+                stageone.props.background = new createjs.Bitmap(queue.getResult("background"));
+                stageone.addChild(stageone.props.background);
+                
+                //Window
+                /* every 244 pixels a window is generated with a padding of 64px */
+                stageone.props.window = [];
+                var a = 0;
+                for(var i = 0; i < parseInt(stageone.canvas.width); i+=244) {
+                    stageone.props.window[a] = new createjs.Bitmap(queue.getResult("window"));
+                    stageone.props.window[a].x = i + 64;
+                    stageone.props.window[a].y = 36;
+                    
+                    stageone.addChild(stageone.props.window[a]);
+                    
+                    a++;
+                }
+                
+                //Computer1
+                stageone.props.computer1 = new createjs.Bitmap(queue.getResult("computer1"));
+                stageone.props.computer1.x = 76;
+                stageone.props.computer1.y = 217;
+                
+                stageone.addChild(stageone.props.computer1);
+                
+                //Computer2
+                stageone.props.computer2 = new createjs.Bitmap(queue.getResult("computer2"));
+                stageone.props.computer2.x = 158;
+                stageone.props.computer2.y = 152;
+                
+                stageone.addChild(stageone.props.computer2);
+                
+                //Lightbulb in all it's glory
+                stageone.props.lightbulb = new createjs.Bitmap(queue.getResult("lightbulb"));
+                stageone.props.lightbulb.x = 227;
+                stageone.props.lightbulb.y = 60;
+                
+                stageone.addChild(stageone.props.lightbulb);
+                
+                //Text over the lightbulb
+                stageone.props.lightbulbtextblur = new createjs.Text("Hello World", "30px Arial", "#ffff88"); 
+                stageone.props.lightbulbtextblur.x = 302; 
+                stageone.props.lightbulbtextblur.y = 224; 
+                stageone.props.lightbulbtextblur.rotation = -5; 
+                stageone.props.lightbulbtextblur.textBaseline = "alphabetic";
+                
+                stageone.props.lightbulbtext = stageone.props.lightbulbtextblur.clone();
+                stageone.props.lightbulbtext.color = "#ffffff";
+                
+                stageone.props.lightbulbtextblur.filters = [new createjs.BlurFilter(15, 15, 1)];
+                stageone.props.lightbulbtextblur.cache(-50,-100,220,200);
+                
+                stageone.addChild(stageone.props.lightbulbtextblur);
+                stageone.addChild(stageone.props.lightbulbtext);
+            }
+            
+            function changeColor(event){
+                circle.graphics.beginFill("green").drawCircle(0, 0, 50);
+            }
+            
+            
+        </script>
+        <style>
+            body {
+                background-color: #333;
+            }
+            
+            canvas {
+                border: 1px solid green;
+            }
+        </style>
+    </head>
+    <body onLoad="init();">
+        <canvas id="one" width="800" height="450"></canvas>
+    </body>
+</html>
