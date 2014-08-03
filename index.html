@@ -22,6 +22,11 @@
                 stageone.enableMouseOver();
 
                 createjs.Ticker.addEventListener("tick", function(){
+                    //stage one stuff
+                    var random = Math.random()*100;
+                    if( random < 5){
+                        stageone.props.switchhandle.advance();
+                    }
                     stageone.update();
                 });
 
@@ -114,6 +119,7 @@
                     
 
                 stageone.props.switchhandle = new createjs.Sprite(stageone.props.switchhandlesprite, "flicker");
+                stageone.props.switchhandle.stop();
                 stageone.props.switchhandle.x = stageone.canvas.width - 100;
                 stageone.props.switchhandle.y = 36;
                 
