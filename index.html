@@ -7,6 +7,7 @@
             var stageone;
             var circle;
             var queue;
+            var tickrate;
             
             function init() {
                 
@@ -18,18 +19,15 @@
                 queue.loadManifest([{id:"background",src:"svg/one/background.png"},{id:"computer1",src:"svg/one/computer1.png"},{id:"computer2",src:"svg/one/computer2.png"},{id:"window",src:"svg/one/window.png"},{id:"lightbulb",src:"svg/one/lightbulb.png"}]);
                 
                 stageone.props = {};
-                
-                circle = new createjs.Shape();
-                circle.graphics.beginFill("red").drawCircle(0, 0, 50);
-                circle.x = 100;
-                circle.y = 100;
-                stageone.addChild(circle);
-                
-                circle.addEventListener("click",changeColor);
-                
-                setInterval(function(){
+
+                createjs.Ticker.addEventListener("tick", function(){
                     stageone.update();
-                }, 200);
+                });
+
+
+
+                createjs.Ticker
+
             }
             
             function handleComplete(event) {
@@ -52,17 +50,23 @@
                 }
                 
                 //Computer1
-                stageone.props.computer1 = new createjs.Bitmap(queue.getResult("computer1"));
-                stageone.props.computer1.x = 76;
-                stageone.props.computer1.y = 217;
-                
+                var computer1 = new createjs.Container();
+                computer1.x = 75;
+                computer1.y = 220;
+                computer1.addChild(new createjs.Bitmap(queue.getResult("computer1")));
+                computer1.lights = createLightDisco(8, 30, 6, 4);
+                computer1.addChild(computer1.lights);
+                stageone.props.computer1 = computer1;
                 stageone.addChild(stageone.props.computer1);
                 
                 //Computer2
-                stageone.props.computer2 = new createjs.Bitmap(queue.getResult("computer2"));
-                stageone.props.computer2.x = 158;
-                stageone.props.computer2.y = 152;
-                
+                var computer2 = new createjs.Container();
+                computer2.x = 160;
+                computer2.y = 155;
+                computer2.addChild(new createjs.Bitmap(queue.getResult("computer2")));
+                computer2.lights = createLightDisco(28, 60, 3, 5);
+                computer2.addChild(computer2.lights);
+                stageone.props.computer2 = computer2;
                 stageone.addChild(stageone.props.computer2);
                 
                 //Lightbulb in all it's glory
@@ -85,14 +89,37 @@
                 stageone.props.lightbulbtextblur.filters = [new createjs.BlurFilter(15, 15, 1)];
                 stageone.props.lightbulbtextblur.cache(-50,-100,220,200);
                 
-                stageone.addChild(stageone.props.lightbulbtextblur);
+                //stageone.addChild(stageone.props.lightbulbtextblur);
                 stageone.addChild(stageone.props.lightbulbtext);
             }
-            
-            function changeColor(event){
-                circle.graphics.beginFill("green").drawCircle(0, 0, 50);
+
+            function createLightDisco(x, y, lightsCol, lightsRow){
+                var lights = new createjs.Container();
+                lights.x = x;
+                lights.y = y;
+                for(var i=0; i < lightsCol*10; i+= 10){
+                    for(var j=0; j < lightsRow*10; j+=10){
+                        var light = new createjs.Shape();
+                        light.setBounds(i,j,5,5);
+                        light.graphics.drawRect(i, j, 5, 5);
+                        lights.addChild(light);
+                    }
+                }
+                lights.addEventListener("tick", function(e){
+                    if(createjs.Ticker.getTicks() % 8 != 0) return;
+
+                    for(var a in e.currentTarget.children){
+                        var colors = ["#989898","red","green","yellow"];
+                        var bit = e.currentTarget.children[a];
+                        var color = colors[Math.round(Math.random()*colors.length)];
+                        bit.bounds = bit.getBounds();
+                        bit.graphics.clear().f(color).drawRect(bit.bounds.x,bit.bounds.y,bit.bounds.width,bit.bounds.height);
+                    }
+                });
+
+                return lights;
             }
-            
+
             
         </script>
         <style>
@@ -102,6 +129,8 @@
             
             canvas {
                 border: 1px solid green;
+                width: 100%;
+                height: 100%;
             }
         </style>
     </head>
