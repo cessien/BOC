@@ -19,14 +19,11 @@
                 queue.loadManifest([{id:"background",src:"svg/one/background.png"},{id:"computer1",src:"svg/one/computer1.png"},{id:"computer2",src:"svg/one/computer2.png"},{id:"window",src:"svg/one/window.png"},{id:"lightbulb",src:"svg/one/lightbulb.png"}]);
                 
                 stageone.props = {};
+                stageone.enableMouseOver();
 
                 createjs.Ticker.addEventListener("tick", function(){
                     stageone.update();
                 });
-
-
-
-                createjs.Ticker
 
             }
             
@@ -51,21 +48,30 @@
                 
                 //Computer1
                 var computer1 = new createjs.Container();
-                computer1.x = 75;
-                computer1.y = 220;
                 computer1.addChild(new createjs.Bitmap(queue.getResult("computer1")));
                 computer1.lights = createLightDisco(8, 30, 6, 4);
                 computer1.addChild(computer1.lights);
+                computer1.regX = computer1.getBounds().width/2;
+                computer1.regY = computer1.getBounds().height;
+                computer1.x = 110;
+                computer1.y = 355;
+                computer1.addEventListener("mouseover", twiddle);
+                computer1.addEventListener("click", twiddle);
                 stageone.props.computer1 = computer1;
                 stageone.addChild(stageone.props.computer1);
                 
                 //Computer2
                 var computer2 = new createjs.Container();
-                computer2.x = 160;
-                computer2.y = 155;
+
                 computer2.addChild(new createjs.Bitmap(queue.getResult("computer2")));
                 computer2.lights = createLightDisco(28, 60, 3, 5);
                 computer2.addChild(computer2.lights);
+                computer2.regX = computer2.getBounds().width/2;
+                computer2.regY = computer2.getBounds().height;
+                computer2.x = 198;
+                computer2.y = 355;
+                computer2.addEventListener("mouseover", twiddle);
+                computer2.addEventListener("click", twiddle);
                 stageone.props.computer2 = computer2;
                 stageone.addChild(stageone.props.computer2);
                 
@@ -118,6 +124,19 @@
                 });
 
                 return lights;
+            }
+
+            function twiddle(e){
+                e.currentTarget.removeAllEventListeners("tick");
+                e.currentTarget.rotation = 0;
+
+                var start = 0;
+                e.currentTarget.addEventListener("tick", function(){
+                    e.currentTarget.rotation += Math.sin(start++);
+
+                    if(start >= 31.4159265)
+                        e.currentTarget.removeAllEventListeners("tick");
+                });
             }
 
             
