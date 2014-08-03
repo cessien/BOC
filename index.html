@@ -24,7 +24,7 @@
                 createjs.Ticker.addEventListener("tick", function(){
                     //stage one stuff
                     var random = Math.random()*100;
-                    if( random < 5){
+                    if( random < 3){
                         stageone.props.switchhandle.advance();
                     }
                     stageone.update();
@@ -187,4 +187,7 @@
     <body onLoad="init();">
         <canvas id="one" width="800" height="450"></canvas>
     </body>
+    <script>
+        document.getElementById("one").style.height = window.innerHeight - 4 + "px";
+    </script>
 </html>
